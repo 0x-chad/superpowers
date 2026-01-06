@@ -13,6 +13,8 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
+**Prefer workmux:** If `workmux` is available, use it instead of raw git commands - it handles merge, branch deletion, and worktree cleanup in one step.
+
 ## The Process
 
 ### Step 1: Verify Tests
@@ -67,24 +69,21 @@ Which option?
 
 #### Option 1: Merge Locally
 
+**With workmux (preferred):**
 ```bash
-# Switch to base branch
+workmux merge <feature-branch>
+```
+This merges to base branch, deletes the branch, and removes the worktree in one command.
+
+**Without workmux (fallback):**
+```bash
 git checkout <base-branch>
-
-# Pull latest
 git pull
-
-# Merge feature branch
 git merge <feature-branch>
-
-# Verify tests on merged result
-<test command>
-
-# If tests pass
+<test command>  # Verify tests on merged result
+git worktree remove <worktree-path>
 git branch -d <feature-branch>
 ```
-
-Then: Cleanup worktree (Step 5)
 
 #### Option 2: Push and Create PR
 
@@ -125,24 +124,23 @@ Type 'discard' to confirm.
 
 Wait for exact confirmation.
 
-If confirmed:
+**With workmux (preferred):**
+```bash
+workmux remove <feature-branch>
+```
+
+**Without workmux (fallback):**
 ```bash
 git checkout <base-branch>
+git worktree remove <worktree-path>
 git branch -D <feature-branch>
 ```
 
-Then: Cleanup worktree (Step 5)
+### Step 5: Cleanup Worktree (only if not using workmux)
 
-### Step 5: Cleanup Worktree
+**Skip this step if you used `workmux merge` or `workmux remove`** - they handle cleanup automatically.
 
-**For Options 1, 2, 4:**
-
-Check if in worktree:
-```bash
-git worktree list | grep $(git branch --show-current)
-```
-
-If yes:
+**For Options 1, 2, 4 (manual cleanup):**
 ```bash
 git worktree remove <worktree-path>
 ```
@@ -159,6 +157,10 @@ git worktree remove <worktree-path>
 | 4. Discard | - | - | - | ✓ (force) |
 
 ## Common Mistakes
+
+**Using raw git commands instead of workmux**
+- **Problem:** Multiple manual steps, easy to forget cleanup
+- **Fix:** Use `workmux merge` or `workmux remove` - one command handles everything
 
 **Skipping test verification**
 - **Problem:** Merge broken code, create failing PR
@@ -185,6 +187,7 @@ git worktree remove <worktree-path>
 - Force-push without explicit request
 
 **Always:**
+- Use `workmux` commands when available
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
