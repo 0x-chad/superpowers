@@ -115,6 +115,7 @@ Other worktrees may be running simultaneously. Before starting services or tests
 - Check for resource conflicts (ports, emulators, containers, databases)
 - Common checks: `lsof -i :<port>`, `adb devices`, `docker ps`
 - Use different resources than what's already in use
+- **DO NOT commit resource changes** (e.g., port numbers in .env) - these are local-only
 [If x-resource-hints exist in .workmux.yaml, list them here]
 
 ## Instructions
