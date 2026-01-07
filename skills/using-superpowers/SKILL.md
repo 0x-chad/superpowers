@@ -68,9 +68,11 @@ These thoughts mean STOP—you're rationalizing:
 
 When multiple skills could apply, use this order:
 
-1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
+1. **Context/environment skills first** (using-git-worktrees) - these determine WHERE work happens
+2. **Process skills second** (brainstorming, debugging) - these determine HOW to approach the task
+3. **Implementation skills third** (frontend-design, mcp-builder) - these guide execution
 
+"In a worktree, fix this bug" → using-git-worktrees first, then debugging, then domain skills.
 "Let's build X" → brainstorming first, then implementation skills.
 "Fix this bug" → debugging first, then domain-specific skills.
 
