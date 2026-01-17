@@ -1,5 +1,7 @@
 # Superpowers Development Notes
 
+**After any commit or change:** Always use Method 1 (version bump) to refresh the plugin.
+
 ## Refreshing Plugin After Edits
 
 Claude Code caches plugins to `~/.claude/plugins/cache/` even for local directory sources. Edits to source files don't auto-propagate.
