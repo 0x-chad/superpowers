@@ -15,6 +15,8 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Prefer workmux:** If `workmux` is available, use it instead of raw git commands - it handles merge, branch deletion, and worktree cleanup in one step.
 
+**Running from inside a worktree:** If your current working directory is inside the worktree being finished, do NOT delete the worktree. Deleting it while Claude is running inside it will terminate the session. Only merge to main; skip worktree removal.
+
 ## The Process
 
 ### Step 1: Verify Tests
@@ -69,13 +71,22 @@ Which option?
 
 #### Option 1: Merge Locally
 
-**With workmux (preferred):**
+**If running from inside the worktree:** Only merge, don't delete the worktree.
+```bash
+git checkout <base-branch>
+git pull
+git merge <feature-branch>
+<test command>  # Verify tests on merged result
+# Skip worktree removal - Claude is running inside it
+```
+
+**With workmux (when NOT inside the worktree):**
 ```bash
 workmux merge <feature-branch>
 ```
 This merges to base branch, deletes the branch, and removes the worktree in one command.
 
-**Without workmux (fallback):**
+**Without workmux (when NOT inside the worktree):**
 ```bash
 git checkout <base-branch>
 git pull
@@ -124,12 +135,19 @@ Type 'discard' to confirm.
 
 Wait for exact confirmation.
 
-**With workmux (preferred):**
+**If running from inside the worktree:** Only delete the branch, not the worktree.
+```bash
+git checkout <base-branch>
+git branch -D <feature-branch>
+# Skip worktree removal - Claude is running inside it
+```
+
+**With workmux (when NOT inside the worktree):**
 ```bash
 workmux remove <feature-branch>
 ```
 
-**Without workmux (fallback):**
+**Without workmux (when NOT inside the worktree):**
 ```bash
 git checkout <base-branch>
 git worktree remove <worktree-path>
@@ -139,6 +157,8 @@ git branch -D <feature-branch>
 ### Step 5: Cleanup Worktree (only if not using workmux)
 
 **Skip this step if you used `workmux merge` or `workmux remove`** - they handle cleanup automatically.
+
+**Skip this step if running from inside the worktree** - deleting it would terminate the session.
 
 **For Options 1, 2, 4 (manual cleanup):**
 ```bash
@@ -185,6 +205,7 @@ git worktree remove <worktree-path>
 - Merge without verifying tests on result
 - Delete work without confirmation
 - Force-push without explicit request
+- Delete a worktree while running inside it (terminates session)
 
 **Always:**
 - Use `workmux` commands when available

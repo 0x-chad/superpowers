@@ -132,6 +132,7 @@ echo "$tmpfile"  # Note the path for step 4
 ```
 
 **Important notes for prompts:**
+- **If user says "In a worktree, do X"**, the X happens in the worktree via the prompt - include skill invocations (e.g., "Use the brainstorming skill to...") in the prompt file, don't invoke them in the current session
 - If tasks reference something discussed earlier (e.g., "do option 2", "implement the fix we discussed"), include all relevant context from the conversation
 - If tasks reference a markdown file (e.g., a plan or spec), re-read the file to ensure you have the latest version before writing prompts
 - Use RELATIVE paths only (never absolute paths, since each worktree has its own root directory)
@@ -220,6 +221,22 @@ Or run `workmux list` to see status.
 [Step 5: STOP - do not continue working on the task]
 ```
 
+```
+User: In a worktree, brainstorm how we could add screenshot context to voice input
+
+You: I'm using the using-git-worktrees skill to set up an isolated workspace.
+
+[Step 0: workmux list - check existing]
+[Step 1-2: verify .worktrees ignored, check .workmux.yaml]
+[Step 3: Write prompt file that includes "Use the brainstorming skill to explore..."]
+[Step 4: workmux add screenshot-voice-brainstorm -b -P /tmp/tmp.abc.md]
+
+Worktree created on branch `screenshot-voice-brainstorm`.
+An agent is now brainstorming in the tmux session.
+
+[Step 5: STOP - do NOT invoke brainstorming here, the tmux agent handles it]
+```
+
 ## Red Flags
 
 **Never:**
@@ -229,6 +246,7 @@ Or run `workmux list` to see status.
 - Use absolute paths in prompts
 - Proceed without verifying directory is ignored (project-local)
 - **Continue working on the task after `workmux add` succeeds** (the tmux agent handles it)
+- **Invoke skills in the current session that should happen in the worktree** (if user says "In a worktree, brainstorm X", put brainstorming in the prompt file)
 
 **Always:**
 - Run `workmux list` first
