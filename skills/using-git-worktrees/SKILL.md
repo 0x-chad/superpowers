@@ -124,7 +124,7 @@ Other worktrees may be running simultaneously. Before starting services or tests
 - If build fails due to missing gitignored files:
   1. Identify what's missing (compare to main repo)
   2. Update .workmux.yaml in the MAIN repo (not worktree) to add symlinks/copies
-  3. Run `workmux remove <name> && workmux add <name>` to recreate with correct files
+  3. Manually copy/symlink the missing files into the worktree
   4. Commit the .workmux.yaml update so future worktrees work
 - Review changes with Claude after completing the task
 EOF
@@ -159,31 +159,18 @@ The user can switch to the tmux session to monitor progress, or wait for the age
 
 ## Completing Work
 
-When work in a worktree is done, use these commands to finish:
+**Default: preserve worktrees.** Worktrees are cheap and serve as historical record. When done:
 
-### Merge and Cleanup
+1. Merge using raw git commands (from main repo, not worktree):
+   ```bash
+   git checkout main && git merge <branch-name>
+   ```
+2. Leave the worktree in place
 
+**Destructive commands (only on explicit user request):**
 ```bash
-# Merge branch into main, then remove worktree, tmux window, and branch
-workmux merge <name>
-
-# Options:
-workmux merge <name> --rebase    # Rebase before merging (fast-forward)
-workmux merge <name> --squash    # Squash all commits into one
-workmux merge <name> --keep      # Merge but keep worktree/branch
-```
-
-### Discard Without Merging
-
-```bash
-# Remove worktree, tmux window, and branch without merging
-workmux remove <name>
-
-# Options:
-workmux remove <name> --force        # Skip confirmation, ignore uncommitted changes
-workmux remove <name> --keep-branch  # Keep the branch, just remove worktree
-workmux remove --gone                # Clean up worktrees whose remote branch was deleted (after PR merge)
-workmux remove --all                 # Remove all worktrees
+workmux merge <name>   # Merges, then deletes worktree and branch
+workmux remove <name>  # Deletes worktree and branch without merging
 ```
 
 ## Quick Reference
@@ -192,9 +179,7 @@ workmux remove --all                 # Remove all worktrees
 |-----------|--------|
 | Check existing worktrees | `workmux list` |
 | Create worktree with prompt | `workmux add <name> -b -P <prompt-file>` |
-| Merge and cleanup | `workmux merge <name>` |
-| Discard without merging | `workmux remove <name>` |
-| Clean up after PR merge | `workmux remove --gone` |
+| Merge branch | `git checkout main && git merge <branch>` |
 | Directory not ignored | Add to .gitignore + commit |
 | Missing gitignored files | Create/update .workmux.yaml with symlinks/copies |
 | Resource conflicts (ports, emulators) | Add `x-resource-hints` to .workmux.yaml |
@@ -247,6 +232,7 @@ An agent is now brainstorming in the tmux session.
 - Proceed without verifying directory is ignored (project-local)
 - **Continue working on the task after `workmux add` succeeds** (the tmux agent handles it)
 - **Invoke skills in the current session that should happen in the worktree** (if user says "In a worktree, brainstorm X", put brainstorming in the prompt file)
+- **Delete or remove worktrees** unless user explicitly requests it
 
 **Always:**
 - Run `workmux list` first
